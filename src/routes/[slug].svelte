@@ -1,35 +1,33 @@
 <script context='module'>
+    import { base } from '$app/paths';
     export const ssr = false;
-    const allPosts = import.meta.globEager(`../news/**/*.md`);
-    let body = [];
 
-    for (let path in allPosts) {
-        const post = allPosts[path];
-        const metadata = post.metadata;
-        const pathArray = path.split('/');
-        const slugPage = pathArray[pathArray.length-2].slice(11);
-        const slugPost = metadata.slug;
-
-        const p = {post, path, slugPage, metadata, slugPost };
-
-        body.push(p);
-    }
-
+    const allPosts = import.meta.globEager(`/post_src/**/*.md`);
     
-    export const load = ({page}) => {
-        const posts = body;
-        const { slug } = page.params;
+    export async function load({ fetch, page }) {
 
-        const filteredPosts = posts.filter( (p) => {
-            const slugPost = p.metadata.slug;
-            const slugToCompare = !slugPost ? p.slugPage : slugPost;
-            return slugToCompare.toLowerCase() === slug.toLowerCase();
-        } );
+        // get list of all posts
+        const url = `${base}/posts.json`;
+        const res = await fetch(url);
+
+        let posts = []
+        if(res.ok) {
+            posts = await res.json()
+        }
+
+        // find matching post
+        const { slug } = page.params;
+        const post = posts.find( (p) => {
+            return p.slug.toLowerCase() === slug.toLowerCase();
+        });
+
+        // load post as module 
+        const content = allPosts[post.path].default
 
         return {
             props: {
-                page: filteredPosts[0].post.default,
-                metadata: filteredPosts[0].metadata
+                metadata: post.metadata,
+                page: content
             }
         }
     }
@@ -39,12 +37,13 @@
 <script>
     import PageTransition from "$lib/PageTransition.svelte";
     export let key;
-
     export let page;
+    export let metadata;
 
+    console.log(metadata, page)
 </script>
 
-<PageTransition refresh={key}>
-    <svelte:component this={page}/>
+<PageTransition refresh={ key }>
+    <svelte:component this={ page }/>
 </PageTransition>
 

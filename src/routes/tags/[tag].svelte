@@ -1,47 +1,42 @@
 <script context="module">
-    const allPosts = import.meta.glob("../blog/**/*.md");
 
-    let body = [];
-    for (let path in allPosts) {
-        body.push(
-            allPosts[path]().then( ({metadata}) => {
-            return { path, metadata}
-            })
-        );  
-    }
+    import { base } from '$app/paths';
 
-    export async function load({page}) {
-		const posts = await Promise.all(body);
-        const tag = page.params.tag;
-        
-        const filteredPosts = posts.filter( p => p.metadata.tags.includes(tag) );
+    export async function load({ page, fetch }) {
 
+        const tag = await page.params.tag;
+        const url = `${base}/posts.json`;
+        const res = await fetch(url);
+
+        let posts = [];
+
+        if(res.ok) {
+            // filter posts
+            posts = await res.json()
+            posts = posts.filter( p => {
+                const tags = [tag] 
+                const hasTag = tags.some(e => p.metadata.tags.includes(e))
+                return hasTag
+            });
+        }
+            
         return {
-            props: {
-                posts: filteredPosts,
-                tag
+            props: { 
+                tag: tag,
+                posts: posts
             }
         }
-	}
+    }
 </script>
 
+
 <script>
-    import { base } from '$app/paths';
+    import PostList from '$lib/PostList.svelte';
     
     export let posts;
     export let tag;
 </script>
 
-<h1>{tag}</h1>
+<h1>Posts tagged "{ tag }"</h1>
 
-<ul>
-    {#each posts as {path, metadata: {title, tags}} }
-        <li>
-            <a href={`${base}/blog/${path.replace(".md","")}`}>{title}</a>
-
-                {#each tags as tag}
-                    <a class="tag" href="{`${base}/tags/${tag}`}">{tag}</a>
-                {/each}
-        </li>
-    {/each}
-</ul>
+<PostList { posts } />

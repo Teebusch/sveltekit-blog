@@ -11,5 +11,3 @@
 <button on:click={() => count+=1}> Increment {count} </button>
 
 <Box />
-
-<p><a sveltekit:prefetch href="{`${base}/`}">Home</a></p>

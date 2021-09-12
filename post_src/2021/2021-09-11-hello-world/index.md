@@ -1,15 +1,38 @@
 ---
-title: "Component: Image"
+file: hello-world.md
+title: Hello World
 tags:
+  - test
   - help
 ---
 
 <script>
+  import Box from "$lib/Box.svelte";
   import Image from "$lib/Image.svelte";
+  import ImageSrc from "$lib/assets/drums.png";
   import MilanoJPG from "$lib/assets/milano.jpg";
   import MilanoWEBP from "$lib/assets/milano.webp";
 </script>
 
+Hi!
+
+<Box />
+
+Bla bla 
+
+```bash
+npx degit el3um4s/memento-sveltekit-and-github-pages
+```
+
+Then install the dependencies with
+
+```bash
+npm install
+```
+
+<img src={ImageSrc} alt={ImageSrc}/>
+
+<Image imageJPG="https://source.unsplash.com/random/800x600"  alt="Random Image" caption="Random foto from Unsplash"/>
 
 ### Source
 

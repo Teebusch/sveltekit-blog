@@ -8,11 +8,19 @@
     };
 </script>
 
+
 <script>
     import PageTransition from "$lib/PageTransition.svelte";
-    import Nav from "$lib/components/Nav.svelte";
+    import { base } from '$app/paths';
+    import Nav from "$lib/Nav.svelte";
     export let key
 </script>
+
+
+<svelte:head>
+    <link href="{`${base}/prism.css`}" rel="stylesheet" />
+</svelte:head>
+
 
 <div class="container">
     <Nav></Nav>
@@ -21,9 +29,10 @@
     </PageTransition>
 </div>
 
+
 <style>
     .container {
-        max-width: 600px;
+        max-width: 800px;
         margin: 50px auto;
     }
 </style>
